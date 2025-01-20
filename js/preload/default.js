@@ -4,7 +4,7 @@ var electron = require('electron')
 var ipc = electron.ipcRenderer
 
 var propertiesToClone = ['deltaX', 'deltaY', 'metaKey', 'ctrlKey', 'defaultPrevented', 'clientX', 'clientY']
-
+console.log('preload.js loaded')
 function cloneEvent (e) {
   var obj = {}
 
