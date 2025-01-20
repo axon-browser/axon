@@ -54,7 +54,7 @@ const tabEditor = {
     if (tabs.count() > 1) {
       requestAnimationFrame(function () {
         var item = document.querySelector(`.tab-item[data-tab="${tabId}"]`)
-        var originCoordinates = item.getBoundingClientRect()
+        var originCoordinates = item?.getBoundingClientRect()
 
         var finalCoordinates = document.querySelector('#tabs').getBoundingClientRect()
 
@@ -71,11 +71,11 @@ const tabEditor = {
     }
   },
   hide: function () {
-    tabEditor.container.hidden = true
-    tabEditor.container.removeAttribute('style')
-    tabEditor.isShown = false
+    // tabEditor.container.hidden = true
+    // tabEditor.container.removeAttribute('style')
+    // tabEditor.isShown = false
 
-    tabEditor.input.blur()
+    // tabEditor.input.blur()
     searchbar.hide()
 
     document.body.classList.remove('is-edit-mode')
@@ -101,6 +101,9 @@ const tabEditor = {
     })
 
     tabEditor.input.addEventListener('keypress', function (e) {
+      
+      tabEditor.show(tabs.getSelected(), this.value, true)
+
       if (e.keyCode === 13) { // return key pressed; update the url
         if (this.getAttribute('data-autocomplete') && this.getAttribute('data-autocomplete').toLowerCase() === this.value.toLowerCase()) {
           // special case: if the typed input is capitalized differently from the actual URL that was autocompleted (but is otherwise the same), then we want to open the actual URL instead of what was typed.
@@ -116,13 +119,13 @@ const tabEditor = {
 
       if (e.key && this.selectionEnd === this.value.length && this.value[this.selectionStart] === e.key) {
         this.selectionStart += 1
-        e.preventDefault()
+        e.preventDefault();
         searchbar.showResults(this.value.substring(0, this.selectionStart), {})
       }
     })
 
     document.getElementById('webviews').addEventListener('click', function () {
-      tabEditor.hide()
+      // tabEditor.show()
     })
   }
 }

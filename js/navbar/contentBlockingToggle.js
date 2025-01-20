@@ -91,7 +91,7 @@ const contentBlockingToggle = {
     remoteMenu.open(menu)
   },
   update: function (tabId, button) {
-    if (!tabs.get(tabId).url.startsWith('http') && !tabs.get(tabId).url.startsWith('https')) {
+    if (!tabs.get(tabId)?.url?.startsWith('http') && !tabs.get(tabId)?.url?.startsWith('https')) {
       button.hidden = true
       return
     }

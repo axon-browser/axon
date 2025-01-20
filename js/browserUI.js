@@ -45,14 +45,13 @@ function addTab (tabId = tabs.add(), options = {}) {
 
   tabBar.addTab(tabId)
   webviews.add(tabId)
-
   if (!options.openInBackground) {
     switchToTab(tabId, {
       focusWebview: options.enterEditMode === false
     })
-    if (options.enterEditMode !== false) {
-      tabEditor.show(tabId)
-    }
+    // if (options.enterEditMode !== false) {
+    //   tabEditor.show(tabId)
+    // }
   } else {
     tabBar.getTab(tabId).scrollIntoView()
   }

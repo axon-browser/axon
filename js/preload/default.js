@@ -4,7 +4,23 @@ var electron = require('electron')
 var ipc = electron.ipcRenderer
 
 var propertiesToClone = ['deltaX', 'deltaY', 'metaKey', 'ctrlKey', 'defaultPrevented', 'clientX', 'clientY']
-console.log('preload.js loaded')
+console.log("Preload script running");
+
+(async ()=>{
+  window.onload = function() {
+    if(window.location.href.includes("meet.google.com")){
+    console.log("media permissions added");
+
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  }
+}
+  console.log("Preload script running 1");
+  // if(window.location.href.includes("meet.google.com")){
+  //   console.log("media permissions added");
+
+  //     navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  // }
+})();
 function cloneEvent (e) {
   var obj = {}
 

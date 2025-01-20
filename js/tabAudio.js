@@ -28,11 +28,11 @@ var tabAudio = {
     var volumeIcon = tabAudio.volumeIcon
 
     if (tab.muted) {
-      button.hidden = false
+      button.hidden = true
       button.classList.remove(volumeIcon)
       button.classList.add(muteIcon)
     } else if (tab.hasAudio) {
-      button.hidden = false
+      button.hidden = true
       button.classList.add(volumeIcon)
       button.classList.remove(muteIcon)
     } else {

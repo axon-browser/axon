@@ -114,31 +114,43 @@
       tabindex="-1"
     >
     <div id="mac-window-drag-area"></div>
-      <button
-        id="menu-button"
-        class="navbar-action-button i carbon:overflow-menu-vertical"
-        data-label="openMenu"
+        <button
+        id="switch-task-button"
+        class="navbar-action-button theme-text-color windowDragHandle i"
+        data-label="viewTasks"
         tabindex="-1"
-      ></button>
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <!-- White square background with rounded corners and border -->
+          <rect x="1" y="1" width="22" height="22" rx="8" fill="white" stroke="#ffffff" stroke-width="1"></rect>
+          
+          <!-- Dark chevron -->
+          <path 
+          d="M8 9.4L12 13.4L16 9.4L17 10.4L12 15.4L7 10.4L8 9.4Z"
+          fill="#5f6368"
+        />
+        />    </svg>
+      </button>
       <div id="toolbar-navigation-buttons" hidden>
           <button
           id="back-button"
           class="navbar-action-button i carbon:chevron-left"
           data-label="goBack"
           tabindex="-1"
+          hidden
         ></button>
         <button
         id="forward-button"
         class="navbar-action-button i carbon:chevron-right"
         data-label="goForward"
         tabindex="-1"
+        hidden
       ></button>
       </div>
       <div id="tabs">
-        <div id="tab-editor" hidden>
-          <input id="tab-editor-input" spellcheck="false" />
-        </div>
+       
         <div id="tabs-inner" role="tablist" class="has-thin-scrollbar"></div>
+        
       </div>
       <div class="navbar-right-actions">
         <button
@@ -149,42 +161,53 @@
         ></button>
       </div>
     </div>
+    <div style="position: absolute;top: 40px;z-index: 2; width: 100%;">
 
-    <button
-      id="switch-task-button"
-      class="navbar-action-button theme-text-color windowDragHandle i"
-      data-label="viewTasks"
-      tabindex="-1"
-    >
-      <svg
-        version="1.1"
-        viewBox="0.0 0.0 26.0 26.0"
-        fill="none"
-        stroke="none"
-        stroke-linecap="square"
-        stroke-miterlimit="10"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g clip-path="url(#p.0)">
-          <path
-            fill="currentColor"
-            d="m0 0l32 0l0 4l-32 0z"
-            fill-rule="evenodd"
-          />
-          <path
-            fill="currentColor"
-            d="m0 11l32 0l0 4l-32 0z"
-            fill-rule="evenodd"
-          />
-          <path
-            fill="currentColor"
-            d="m0 22l32 0l0 4l-32 0z"
-            fill-rule="evenodd"
-          />
-        </g>
-      </svg>
-    </button>
+      <div class="nav-bar">
+        <button class="nav-button" title="Go back" id="go-back-button">
+          <svg viewBox="0 0 24 24">
+            <path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+          </svg>
+        </button>
+        
+        <button class="nav-button" title="Go forward" id="go-forward-button">
+          <svg viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+          </svg>
+        </button>
+        
+        <button class="nav-button" title="Reload" id="reload-button">
+          <svg class="reload-icon" viewBox="0 0 24 24" id="reload-icon">
+            <path fill="currentColor" d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+          </svg>
+          <svg class="stop-icon" viewBox="0 0 24 24" id="stop-reload-icon">
+            <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+        
+        <div class="address-bar" id="tab-editor">
+          <input id="tab-editor-input" spellcheck="false" />
+        </div>
+
+        <button
+        id="menu-button"
+        class="navbar-action-button i carbon:overflow-menu-vertical"
+        data-label="openMenu"
+        tabindex="-1"
+      ></button>
+      </div>
+    </div>
+
+    <!-- <div style="
+    position: absolute;
+    top: 40px;
+    z-index: 1000;
+    border: 1px solid black;
+    width: 100%;
+    ">
+    <input id="tab-editor-input-s" spellcheck="false" placeholder="Search or enter address">
+    </div> -->
+    
 
     <div id="searchbar" class="theme-background-color theme-text-color">
       <div class="top-answer-area"></div>
