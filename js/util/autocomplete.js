@@ -2,20 +2,20 @@ var urlParser = require('util/urlParser.js')
 
 function autocomplete (input, strings) {
   // if there is text after the selection, we can never autocomplete
-  if (input.selectionEnd !== input.value.length) {
+  if (input?.selectionEnd !== input?.value?.length) {
     return {
       valid: false
     }
   }
 
-  var text = input.value.substring(0, input.selectionStart)
+  var text = input?.value?.substring(0, input.selectionStart)
 
   for (var i = 0; i < strings.length; i++) {
     // check if the item can be autocompleted
-    if (strings[i].toLowerCase().indexOf(text.toLowerCase()) === 0) {
-      input.value = text + strings[i].substring(input.selectionStart)
-      input.setSelectionRange(text.length, strings[i].length)
-      input.setAttribute('data-autocomplete', strings[i])
+    if (strings?.[i]?.toLowerCase()?.indexOf(text?.toLowerCase()) === 0) {
+      input.value = text + strings?.[i]?.substring(input?.selectionStart)
+      input?.setSelectionRange(text?.length, strings[i]?.length)
+      input?.setAttribute('data-autocomplete', strings?.[i])
 
       return {
         valid: true,
@@ -23,7 +23,7 @@ function autocomplete (input, strings) {
       }
     }
   }
-  input.removeAttribute('data-autocomplete')
+  input?.removeAttribute('data-autocomplete')
   return {
     valid: false
   }

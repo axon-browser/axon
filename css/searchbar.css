@@ -1,7 +1,7 @@
 #searchbar {
   z-index: 3;
   position: fixed;
-  top: calc(var(--control-space-top) + 36px);
+  top: calc(var(--control-space-top) + 80px);
   left: 0;
   width: 100%;
   background: #fff;
@@ -9,7 +9,7 @@
   padding-left: var(--control-space-left);
   padding-right: calc(82px + var(--control-space-right));
   -webkit-user-select: none;
-  max-height: calc(100% - 125px);
+  max-height: calc(100% - 80px);
   overflow-y: auto;
 }
 
@@ -21,7 +21,7 @@ body.ntp-has-background #searchbar {
 /* account for menu button */
 body.windows #searchbar,
 body.linux #searchbar {
-  padding-left: calc(36px + var(--control-space-left));
+  padding-left: calc(80px + var(--control-space-left));
 }
 
 .searchbar-plugin-container {

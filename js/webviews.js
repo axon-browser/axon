@@ -29,6 +29,14 @@ function captureCurrentTab (options) {
 
 // called whenever a new page starts loading, or an in-page navigation occurs
 function onPageURLChange (tab, url) {
+  var currentURL = url;
+  if (currentURL === 'min://newtab') {
+    currentURL = ''
+  };
+  if (tab === tabs.getSelected()) {
+    document.getElementById('tab-editor-input').value = currentURL;
+  }
+  // tabEditor.input.value = currentURL;
   if (url.indexOf('https://') === 0 || url.indexOf('about:') === 0 || url.indexOf('chrome:') === 0 || url.indexOf('file://') === 0 || url.indexOf('min://') === 0) {
     tabs.update(tab, {
       secure: true,
@@ -40,14 +48,15 @@ function onPageURLChange (tab, url) {
       url: url
     })
   }
-
+  webviews.updateNavigationButtons();
+  webviews.updateReloadButton();
   webviews.callAsync(tab, 'setVisualZoomLevelLimits', [1, 3])
 }
 
 // called whenever a navigation finishes
 function onNavigate (tabId, url, isInPlace, isMainFrame, frameProcessId, frameRoutingId) {
   if (isMainFrame) {
-    onPageURLChange(tabId, url)
+    onPageURLChange(tabId, url);
   }
 }
 
@@ -57,7 +66,8 @@ function onPageLoad (tabId) {
   if (tabId === tabs.getSelected()) {
     setTimeout(function () {
       // sometimes the page isn't visible until a short time after the did-finish-load event occurs
-      captureCurrentTab()
+      captureCurrentTab();
+      webviews.updateReloadButton()
     }, 250)
   }
 }
@@ -111,6 +121,82 @@ const webviews = {
   hasViewForTab: function(tabId) {
     return tabId && tasks.getTaskContainingTab(tabId) && tasks.getTaskContainingTab(tabId).tabs.get(tabId).hasWebContents
   },
+  updateNavigationButtons: async function () {
+    const goBackButton = document.getElementById('go-back-button');
+    const goForwardButton = document.getElementById('go-forward-button');
+    const navHistory = await webviews.getNavigationHistory(tabs.getSelected());
+    const currentWebview = tabs.get(tabs.getSelected());
+
+    if(navHistory?.activeIndex > 0){
+      goBackButton.disabled = false;
+      currentWebview.canGoBack = true;
+    }else{
+      goBackButton.disabled = true;
+      currentWebview.canGoBack = false;
+    } 
+    if(navHistory?.entries.length-1 > navHistory?.activeIndex){
+      goForwardButton.disabled = false;
+      currentWebview.canGoForward = true;
+    }else{
+      goForwardButton.disabled = true;
+      currentWebview.canGoForward = false;
+    }
+  },
+  updateReloadButton:async function () {
+    setTimeout(()=>{
+      const currentWebview = tabs.get(tabs.getSelected());
+      const reloadButton = document.getElementById('reload-button');
+      if (!currentWebview.loaded && currentWebview.url!=="min://newtab" && currentWebview.url!=="") {
+        reloadButton.classList.add('loading');
+        reloadButton.title = 'Stop loading';
+      } else {
+        reloadButton.classList.remove('loading');
+        reloadButton.title = 'Reload';
+      }
+    },100) 
+  },
+  updateTabFavicon: function (tabEl, faviconUrl) {
+      // Exit if no favicon data is present
+      if (!faviconUrl) {
+        return;
+      }
+    
+      // const FAVICON_MINIMUM_LUMINANCE = 70; // minimum brightness for a "light" favicon
+      
+      // Get or create favicon container
+      let faviconArea = tabEl.getElementsByClassName('tab-favicons')[0];
+      if (!faviconArea) {
+        faviconArea = document.createElement('span');
+        faviconArea.className = 'tab-favicons';
+      }
+      
+      // Hide reader button
+      const readerButton = tabEl.getElementsByClassName('reader-button')[0];
+      if (readerButton) {
+        readerButton.style.display = "none";
+      }
+      
+      // Remove existing favicon if present
+      const existingFavicon = faviconArea.querySelector('img');
+      if (existingFavicon) {
+        existingFavicon.remove();
+      }
+      
+      // Create and configure new favicon
+      const newFavicon = document.createElement('img');
+      newFavicon.src = faviconUrl;
+      
+      // Add dark-favicon class if luminance is below threshold
+      // if (tabData.favicon.luminance < FAVICON_MINIMUM_LUMINANCE) {
+      //   newFavicon.classList.add('dark-favicon');
+      // }
+      
+      // Add favicon to container
+      faviconArea.appendChild(newFavicon);
+      const titleContainer = tabEl.getElementsByClassName('title-container')[0];
+      // Insert favicon container at the beginning of tab element
+      titleContainer.insertBefore(faviconArea, titleContainer.children[0]);
+  },
   bindEvent: function (event, fn) {
     webviews.events.push({
       event: event,
@@ -159,9 +245,9 @@ const webviews = {
       }
     } else {
       if (!hasSeparateTitlebar && (window.platformType === 'linux' || window.platformType === 'windows') && !windowIsMaximized && !windowIsFullscreen) {
-        var navbarHeight = 48
+        var navbarHeight = 80
       } else {
-        var navbarHeight = 36
+        var navbarHeight = 80
       }
 
       const viewMargins = webviews.viewMargins
@@ -178,7 +264,7 @@ const webviews = {
   },
   add: function (tabId, existingViewId) {
     var tabData = tabs.get(tabId)
-
+    var currentTab = tabs.get(tabs.getSelected())
     // needs to be called before the view is created to that its listeners can be registered
     if (tabData.scrollPosition) {
       scrollOnLoad(tabId, tabData.scrollPosition)
@@ -191,7 +277,10 @@ const webviews = {
     // if the tab is private, we want to partition it. See http://electron.atom.io/docs/v0.34.0/api/web-view-tag/#partition
     // since tab IDs are unique, we can use them as partition names
     if (tabData.private === true) {
-      var partition = tabId.toString() // options.tabId is a number, which remote.session.fromPartition won't accept. It must be converted to a string first
+      var partition = currentTab.private && currentTab.partition
+        ? currentTab.partition
+        : `persist:${tabId.toString()}`;
+      tabs.update(tabId, { partition });
     }
 
     ipc.send('createView', {
@@ -416,6 +505,9 @@ ipc.on('leave-full-screen', function () {
 
 webviews.bindEvent('did-start-navigation', onNavigate)
 webviews.bindEvent('will-redirect', onNavigate)
+webviews.bindEvent('did-start-loading', function (tabId) {
+  webviews.updateReloadButton()
+})
 webviews.bindEvent('did-navigate', function (tabId, url, httpResponseCode, httpStatusText) {
   onPageURLChange(tabId, url)
 })
@@ -429,6 +521,7 @@ webviews.bindEvent('page-title-updated', function (tabId, title, explicitSet) {
 })
 
 webviews.bindEvent('did-fail-load', function (tabId, errorCode, errorDesc, validatedURL, isMainFrame) {
+  webviews.updateReloadButton();
   if (errorCode && errorCode !== -3 && isMainFrame && validatedURL) {
     webviews.update(tabId, webviews.internalPages.error + '?ec=' + encodeURIComponent(errorCode) + '&url=' + encodeURIComponent(validatedURL))
   }

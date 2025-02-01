@@ -8,11 +8,11 @@ body {
 .window-drag-area {
   display: none;
 }
-
+/* 
 body.windows:not(.maximized):not(.fullscreen):not(.separate-titlebar),
 body.linux:not(.maximized):not(.fullscreen):not(.separate-titlebar) {
   --control-space-top: 12px;
-}
+} */
 
 /* On Windows, draggable regions aren't clickable, so the drag region is a separate area above the tabstrip */
 body.windows:not(.maximized):not(.fullscreen):not(.separate-titlebar) .window-drag-area,
@@ -71,6 +71,7 @@ body.windows:not(.separate-titlebar) .windows-caption-buttons {
   top: var(--control-space-top);
   right: 0;
   z-index: 10;
+  margin-top: 4px;
 }
 
 .windows-caption-buttons .element {

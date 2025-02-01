@@ -104,7 +104,7 @@ var urlParser = {
     }
   },
   isInternalURL: function (url) {
-    return url.startsWith('min://')
+    return url?.startsWith('min://')
   },
   getSourceURL: function (url) {
     // converts internal URLs (like the PDF viewer or the reader view) to the URL of the page they are displaying

@@ -7,7 +7,7 @@
   transition: 0.2s transform, 0.2s opacity;
 }
 .searchbar-item.placeholder {
-  height: 36px;
+  height: 80px;
 }
 .searchbar-item:after {
   content: "";

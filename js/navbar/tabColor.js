@@ -91,6 +91,49 @@ function getColorFromImage (image) {
   return res
 }
 
+// function updateTabFavicon(tabEl, faviconUrl) {
+//   // Exit if no favicon data is present
+//   if (!faviconUrl) {
+//     return;
+//   }
+
+//   // const FAVICON_MINIMUM_LUMINANCE = 70; // minimum brightness for a "light" favicon
+  
+//   // Get or create favicon container
+//   let faviconArea = tabEl.getElementsByClassName('tab-favicons')[0];
+//   if (!faviconArea) {
+//     faviconArea = document.createElement('span');
+//     faviconArea.className = 'tab-favicons';
+//   }
+  
+//   // Hide reader button
+//   const readerButton = tabEl.getElementsByClassName('reader-button')[0];
+//   if (readerButton) {
+//     readerButton.style.display = "none";
+//   }
+  
+//   // Remove existing favicon if present
+//   const existingFavicon = faviconArea.querySelector('img');
+//   if (existingFavicon) {
+//     existingFavicon.remove();
+//   }
+  
+//   // Create and configure new favicon
+//   const newFavicon = document.createElement('img');
+//   newFavicon.src = faviconUrl;
+  
+//   // Add dark-favicon class if luminance is below threshold
+//   // if (tabData.favicon.luminance < FAVICON_MINIMUM_LUMINANCE) {
+//   //   newFavicon.classList.add('dark-favicon');
+//   // }
+  
+//   // Add favicon to container
+//   faviconArea.appendChild(newFavicon);
+  
+//   // Insert favicon container at the beginning of tab element
+//   tabEl.insertBefore(faviconArea, tabEl.children[0]);
+// }
+
 function getColorFromString (str) {
   colorExtractorContext.clearRect(0, 0, 1, 1)
   colorExtractorContext.fillStyle = str
@@ -154,6 +197,8 @@ function getLuminance (c) {
 }
 
 function setColor (bg, fg, isLowContrast) {
+  bg = "#9bb494";
+  fg = "#000000";
   document.body.style.setProperty('--theme-background-color', bg)
   document.body.style.setProperty('--theme-foreground-color', fg)
 
@@ -184,6 +229,8 @@ const tabColor = {
   useSiteTheme: true,
   initialize: function () {
     webviews.bindEvent('page-favicon-updated', function (tabId, favicons) {
+      const currentTab = tabs.get(tabId);
+      webviews.updateTabFavicon(document.querySelector(`.tab-item[data-tab="${tabId}"]`), favicons?.[0]);
       tabColor.updateFromImage(favicons, tabId, function () {
         if (tabId === tabs.getSelected()) {
           tabColor.updateColors()
@@ -254,7 +301,7 @@ const tabColor = {
   },
   updateFromImage: function (favicons, tabId, callback) {
     // private tabs always use a special color, we don't need to get the icon
-    if (tabs.get(tabId).private === true) {
+    if (tabs.get(tabId)?.private === true) {
       return
     }
 

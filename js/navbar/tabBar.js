@@ -11,6 +11,8 @@ const urlParser = require('util/urlParser.js')
 const tabEditor = require('navbar/tabEditor.js')
 const progressBar = require('navbar/progressBar.js')
 const permissionRequests = require('navbar/permissionRequests.js')
+const shareScreenRequests = require('navbar/shareScreenRequests.js')
+const bookmarkStar = require('navbar/bookmarkStar.js')
 
 var lastTabDeletion = 0 // TODO get rid of this
 
@@ -38,7 +40,16 @@ const tabBar = {
     var el = tabBar.getTab(tabId)
     el.classList.add('active')
     el.setAttribute('aria-selected', 'true')
-
+    var currentURL = urlParser.getSourceURL(tabs.get(tabId).url);
+    if (currentURL === 'min://newtab') {
+      currentURL = ''
+    };
+    tabEditor.input.value = currentURL;
+    tabEditor.input.focus();
+    webviews.updateNavigationButtons();
+    webviews.updateReloadButton();
+    shareScreenRequests.update();
+    bookmarkStar.update(tabId, tabEditor.star)
     requestAnimationFrame(function () {
       el.scrollIntoView()
     })
@@ -100,7 +111,7 @@ const tabBar = {
       if (tabs.getSelected() !== data.id) { // else switch to tab if it isn't focused
         tabBar.events.emit('tab-selected', data.id)
       } else { // the tab is focused, edit tab instead
-        tabEditor.show(data.id)
+        // tabEditor.show(data.id)
       }
     })
 
@@ -115,21 +126,21 @@ const tabBar = {
         // https://github.com/minbrowser/min/issues/698
         return
       }
-      if (e.deltaY > 65 && e.deltaX < 10 && Date.now() - lastTabDeletion > 900) { // swipe up to delete tabs
-        lastTabDeletion = Date.now()
+      // if (e.deltaY > 65 && e.deltaX < 10 && Date.now() - lastTabDeletion > 900) { // swipe up to delete tabs
+      //   lastTabDeletion = Date.now()
 
-        /* tab deletion is disabled in focus mode */
-        if (focusMode.enabled()) {
-          focusMode.warn()
-          return
-        }
+      //   /* tab deletion is disabled in focus mode */
+      //   if (focusMode.enabled()) {
+      //     focusMode.warn()
+      //     return
+      //   }
 
-        this.style.transform = 'translateY(-100%)'
+      //   this.style.transform = 'translateY(-100%)'
 
-        setTimeout(function () {
-          tabBar.events.emit('tab-closed', data.id)
-        }, 150) // wait until the animation has completed
-      }
+      //   setTimeout(function () {
+      //     tabBar.events.emit('tab-closed', data.id)
+      //   }, 150) // wait until the animation has completed
+      // }
     })
 
     tabBar.updateTab(data.id, tabEl)
@@ -138,7 +149,6 @@ const tabBar = {
   },
   updateTab: function (tabId, tabEl = tabBar.getTab(tabId)) {
     var tabData = tabs.get(tabId)
-
     // update tab title
     var tabTitle
 
@@ -195,6 +205,8 @@ const tabBar = {
       insecureIcon.title = l('connectionNotSecure')
       iconArea.appendChild(insecureIcon)
     }
+    bookmarkStar.update(tabId, tabEditor.star)
+    webviews.updateTabFavicon(tabEl,tabData?.favicon?.url)
   },
   updateAll: function () {
     empty(tabBar.containerInner)
@@ -211,10 +223,12 @@ const tabBar = {
     }
     tabBar.handleSizeChange()
   },
-  addTab: function (tabId) {
+  addTab: function (tabId, isAddNewTabButton = false) {
     var tab = tabs.get(tabId)
-    var index = tabs.getIndex(tabId)
-
+    var index = tabs.getTabIndex(tabs.getSelected())+1;
+    if(isAddNewTabButton){
+      index = tabBar.containerInner.childNodes.length;
+    }
     var tabEl = tabBar.createTab(tab)
     tabBar.containerInner.insertBefore(tabEl, tabBar.containerInner.childNodes[index])
     tabBar.tabElementMap[tabId] = tabEl
@@ -279,12 +293,12 @@ settings.listen('showDividerBetweenTabs', function (dividerPreference) {
 
 /* tab loading and progress bar status */
 webviews.bindEvent('did-start-loading', function (tabId) {
-  progressBar.update(tabBar.getTab(tabId).querySelector('.progress-bar'), 'start')
+  progressBar.update(tabBar.getTab(tabId)?.querySelector('.progress-bar'), 'start')
   tabs.update(tabId, { loaded: false })
 })
 
 webviews.bindEvent('did-stop-loading', function (tabId) {
-  progressBar.update(tabBar.getTab(tabId).querySelector('.progress-bar'), 'finish')
+  progressBar.update(tabBar.getTab(tabId)?.querySelector('.progress-bar'), 'finish')
   tabs.update(tabId, { loaded: true })
   tabBar.updateTab(tabId)
 })

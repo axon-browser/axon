@@ -29,6 +29,7 @@ class TabList {
       previewImage: '',
       isFileView: false,
       hasWebContents: false,
+      partition: '',
     }
 
     if (options.atEnd) {
@@ -108,6 +109,16 @@ class TabList {
   getIndex (id) {
     for (var i = 0; i < this.tabs.length; i++) {
       if (this.tabs[i].id === id) {
+        return i
+      }
+    }
+    return -1
+  }
+
+  getTabIndex (id) {
+    const tabBarEL =  document.getElementById('tabs-inner').childNodes;
+    for (var i = 0; i < tabBarEL.length; i++) {
+      if (tabBarEL[i]?.dataset?.["tab"] === id) {
         return i
       }
     }

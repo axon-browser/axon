@@ -20,8 +20,29 @@ const bookmarkStar = {
   onClick: function (star) {
     var tabId = star.getAttribute('data-tab')
 
-    searchbarPlugins.clearAll()
-
+    searchbarPlugins.clearAll();
+    const isBookmarked = star.classList.contains('carbon:star-filled')
+    if(isBookmarked){
+      bookmarkStar.removeBookmark(star,tabId)
+    }else{
+      bookmarkStar.addBookmark(star,tabId)
+    }
+   
+  },
+  removeBookmark: function (star, tabId) {
+    places.updateItem(tabs.get(tabId).url, {
+      isBookmarked: false,
+      title: tabs.get(tabId).title // if this page is open in a private tab, the title may not be saved already, so it needs to be included here
+    })
+    .then(function () {
+        star.classList.add('carbon:star');
+        star.classList.remove('carbon:star-filled');
+        star.setAttribute('aria-pressed', false);
+        searchbar.showResults('');
+        searchbar?.associatedInput?.focus();
+    });
+  },
+  addBookmark: function (star, tabId) {
     places.updateItem(tabs.get(tabId).url, {
       isBookmarked: true,
       title: tabs.get(tabId).title // if this page is open in a private tab, the title may not be saved already, so it needs to be included here

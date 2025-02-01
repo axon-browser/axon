@@ -334,7 +334,7 @@ function buildAppMenu (options = {}) {
             {
               label: l('appMenuInspectBrowser'),
               accelerator: (function () {
-                if (process.platform === 'darwin') { return 'Shift+Cmd+Alt+I' } else { return 'Ctrl+Shift+Alt+I' }
+                if (process.platform === 'darwin') { return 'Shift+Cmd+Alt+I' } else { return 'Shift+I' }
               })(),
               click: function (item, focusedWindow) {
                 if (focusedWindow) getWindowWebContents(focusedWindow).toggleDevTools()

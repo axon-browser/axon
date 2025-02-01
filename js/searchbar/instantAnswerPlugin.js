@@ -151,7 +151,7 @@ function showSearchbarInstantAnswers (text, input, inputFlags) {
       if (searchbarPlugins.getTopAnswer()) {
         searchbarPlugins.addResult('instantAnswers', suggestedSiteData)
       } else {
-        if (!inputFlags.isDeletion) {
+        if (!inputFlags?.isDeletion) {
           // don't autocomplete if delete key pressed
           const autocompletionType = searchbarAutocomplete.autocompleteURL(input, url)
 
