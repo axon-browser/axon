@@ -43,7 +43,7 @@ function addTab (tabId = tabs.add(), options = {}) {
     destroyTab(tabs.getSelected())
   }
 
-  tabBar.addTab(tabId)
+  tabBar.addTab(tabId, options.isAddNewTabButton)
   webviews.add(tabId)
   if (!options.openInBackground) {
     switchToTab(tabId, {

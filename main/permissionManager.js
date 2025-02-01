@@ -206,6 +206,69 @@ app.once('ready', function () {
 app.on('session-created', function (session) {
   session.setPermissionRequestHandler(pagePermissionRequestHandler)
   session.setPermissionCheckHandler(pagePermissionCheckHandler)
+  session.setDisplayMediaRequestHandler((request, originalCallback) => {
+    // Create a wrapper to ensure callback is called only once
+    let callbackCalled = false;
+    const safeCallback = (result) => {
+      if (!callbackCalled) {
+        callbackCalled = true;
+        originalCallback(result);
+      } else {
+        console.warn('Callback already called, ignoring subsequent call');
+      }
+    };
+  
+    // Create a promise to handle source selection
+    const sourceSelectionPromise = new Promise((resolve, reject) => {
+      // Fetch desktop sources
+     require('electron').desktopCapturer.getSources({ 
+        types: ['screen', 'window'], 
+        thumbnailSize: { width: 150, height: 150 } 
+      }).then(sources => {
+        // Broadcast sources to renderer
+        windows.getAll().forEach(function(win) {
+              sendIPCToWindow(win, 'screen-share-sources', {
+                sources: sources
+              })
+        });
+          // Set up source selection listener
+        const sourceSelectionHandler = (event, selectedSourceId) => {
+          // Remove all listeners to prevent multiple triggers
+          ipc.removeAllListeners('source-selected');
+          ipc.removeAllListeners('source-modal-closed');
+  
+          if (selectedSourceId || selectedSourceId === 0) {
+            safeCallback({video: sources[selectedSourceId]})
+            resolve(true);
+          } else {
+            safeCallback(null);
+            resolve(false);
+          }
+        
+        };
+  
+        // Set up cancellation handler
+        const sourceCancelHandler = () => {
+          ipc.removeAllListeners('source-selected');
+          ipc.removeAllListeners('source-modal-closed');
+          
+          safeCallback(null);
+          resolve(false);
+        };
+  
+        // Listen for source selection or cancellation
+        ipc.once('source-selected', sourceSelectionHandler);
+        ipc.once('source-modal-closed', sourceCancelHandler);
+      }).catch(error => {
+        console.error('Error getting sources:', error);
+        safeCallback(null);
+        resolve(false);
+      });
+    });
+  
+    return sourceSelectionPromise;
+  });
+  
 })
 
 ipc.on('permissionGranted', function (e, permissionId) {

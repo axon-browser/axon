@@ -14,7 +14,7 @@
 
 #tab-editor-input {
   font-size: 14px;
-  padding: 0px 12px 0px 12px;
+  padding: 0px 6px 0px 6px;
   /* line-height: 2em; */
   background: none;
   -webkit-appearance: none;
@@ -34,7 +34,7 @@
 
 #tab-editor .tab-editor-button {
   padding: 0.4em;
-  margin-top: 0.1em;
+  /* margin-top: 0.1em; */
   border-radius: 50%;
 }
 

@@ -11,6 +11,7 @@ const urlParser = require('util/urlParser.js')
 const tabEditor = require('navbar/tabEditor.js')
 const progressBar = require('navbar/progressBar.js')
 const permissionRequests = require('navbar/permissionRequests.js')
+const shareScreenRequests = require('navbar/shareScreenRequests.js')
 const bookmarkStar = require('navbar/bookmarkStar.js')
 
 var lastTabDeletion = 0 // TODO get rid of this
@@ -47,6 +48,7 @@ const tabBar = {
     tabEditor.input.focus();
     webviews.updateNavigationButtons();
     webviews.updateReloadButton();
+    shareScreenRequests.update();
     bookmarkStar.update(tabId, tabEditor.star)
     requestAnimationFrame(function () {
       el.scrollIntoView()
@@ -221,11 +223,12 @@ const tabBar = {
     }
     tabBar.handleSizeChange()
   },
-  addTab: function (tabId) {
+  addTab: function (tabId, isAddNewTabButton = false) {
     var tab = tabs.get(tabId)
-    // var index = tabs.getIndex(tabId)
-    var index = tabBar.containerInner.childNodes.length;
-
+    var index = tabs.getTabIndex(tabs.getSelected())+1;
+    if(isAddNewTabButton){
+      index = tabBar.containerInner.childNodes.length;
+    }
     var tabEl = tabBar.createTab(tab)
     tabBar.containerInner.insertBefore(tabEl, tabBar.containerInner.childNodes[index])
     tabBar.tabElementMap[tabId] = tabEl

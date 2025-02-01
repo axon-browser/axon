@@ -16,7 +16,8 @@ const {
   nativeTheme,
   shell,
   net,
-  WebContentsView
+  WebContentsView,
+  desktopCapturer
 } = electron
 
 crashReporter.start({
@@ -188,6 +189,7 @@ function createWindow (customArgs = {}) {
 
   return createWindowWithBounds(bounds, customArgs)
 }
+let mainView = null;
 
 function createWindowWithBounds (bounds, customArgs) {
   const newWin = new BaseWindow({
@@ -211,7 +213,7 @@ function createWindowWithBounds (bounds, customArgs) {
     newWin.setMenuBarVisibility(false)
   }
 
-  const mainView = new WebContentsView({
+  mainView = new WebContentsView({
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -495,3 +497,17 @@ ipc.on('places-connect', function (e) {
 function getWindowWebContents (win) {
   return win.getContentView().children[0].webContents
 }
+
+
+ipc.handle('get-preload-data', async function (e, data) {
+  const value = await mainView?.webContents?.executeJavaScript(`localStorage.getItem('user_email')`)
+  return value
+})
+
+ipc.handle('get-sources', async () => {
+  const sources = await desktopCapturer.getSources({
+    types: ['window', 'screen'],
+    thumbnailSize: { width: 150, height: 150 }
+  })
+  return sources
+})

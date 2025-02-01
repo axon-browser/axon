@@ -33,7 +33,9 @@ function onPageURLChange (tab, url) {
   if (currentURL === 'min://newtab') {
     currentURL = ''
   };
-  document.getElementById('tab-editor-input').value = currentURL;
+  if (tab === tabs.getSelected()) {
+    document.getElementById('tab-editor-input').value = currentURL;
+  }
   // tabEditor.input.value = currentURL;
   if (url.indexOf('https://') === 0 || url.indexOf('about:') === 0 || url.indexOf('chrome:') === 0 || url.indexOf('file://') === 0 || url.indexOf('min://') === 0) {
     tabs.update(tab, {
@@ -141,15 +143,17 @@ const webviews = {
     }
   },
   updateReloadButton:async function () {
-    const currentWebview = tabs.get(tabs.getSelected());
-    const reloadButton = document.getElementById('reload-button');
-    if (!currentWebview.loaded && currentWebview.url!=="min://newtab" && currentWebview.url!=="") {
-      reloadButton.classList.add('loading');
-      reloadButton.title = 'Stop loading';
-    } else {
-      reloadButton.classList.remove('loading');
-      reloadButton.title = 'Reload';
-    }
+    setTimeout(()=>{
+      const currentWebview = tabs.get(tabs.getSelected());
+      const reloadButton = document.getElementById('reload-button');
+      if (!currentWebview.loaded && currentWebview.url!=="min://newtab" && currentWebview.url!=="") {
+        reloadButton.classList.add('loading');
+        reloadButton.title = 'Stop loading';
+      } else {
+        reloadButton.classList.remove('loading');
+        reloadButton.title = 'Reload';
+      }
+    },100) 
   },
   updateTabFavicon: function (tabEl, faviconUrl) {
       // Exit if no favicon data is present
@@ -260,7 +264,7 @@ const webviews = {
   },
   add: function (tabId, existingViewId) {
     var tabData = tabs.get(tabId)
-
+    var currentTab = tabs.get(tabs.getSelected())
     // needs to be called before the view is created to that its listeners can be registered
     if (tabData.scrollPosition) {
       scrollOnLoad(tabId, tabData.scrollPosition)
@@ -273,7 +277,10 @@ const webviews = {
     // if the tab is private, we want to partition it. See http://electron.atom.io/docs/v0.34.0/api/web-view-tag/#partition
     // since tab IDs are unique, we can use them as partition names
     if (tabData.private === true) {
-      var partition = tabId.toString() // options.tabId is a number, which remote.session.fromPartition won't accept. It must be converted to a string first
+      var partition = currentTab.private && currentTab.partition
+        ? currentTab.partition
+        : `persist:${tabId.toString()}`;
+      tabs.update(tabId, { partition });
     }
 
     ipc.send('createView', {
@@ -514,6 +521,7 @@ webviews.bindEvent('page-title-updated', function (tabId, title, explicitSet) {
 })
 
 webviews.bindEvent('did-fail-load', function (tabId, errorCode, errorDesc, validatedURL, isMainFrame) {
+  webviews.updateReloadButton();
   if (errorCode && errorCode !== -3 && isMainFrame && validatedURL) {
     webviews.update(tabId, webviews.internalPages.error + '?ec=' + encodeURIComponent(errorCode) + '&url=' + encodeURIComponent(validatedURL))
   }
