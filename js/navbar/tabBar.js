@@ -93,6 +93,9 @@ const tabBar = {
     var titleContainer = document.createElement('div')
     titleContainer.className = 'title-container'
 
+    var dragContainer = document.createElement('div')
+    dragContainer.className = 'tab-drag-div'
+
     var title = document.createElement('span')
     title.className = 'title'
 
@@ -105,6 +108,8 @@ const tabBar = {
     titleContainer.appendChild(urlElement)
 
     tabEl.appendChild(titleContainer)
+
+    tabEl.appendChild(dragContainer)
 
     // click to enter edit mode or switch to a tab
     tabEl.addEventListener('click', function (e) {
@@ -207,6 +212,24 @@ const tabBar = {
     }
     bookmarkStar.update(tabId, tabEditor.star)
     webviews.updateTabFavicon(tabEl,tabData?.favicon?.url)
+    if(tabs.count() === 1 ){
+      tabBar.handleTabWindowDrag("add", tabEl)
+    }else{
+      tabBar.handleTabWindowDrag("remove")
+    }
+  },
+  handleTabWindowDrag: function (type, tabEl) {
+    const tabBarEL = document.getElementById('tabs-inner').childNodes;
+    const action = type === "add" ? "add" : "remove";
+    const applyAction = (tab) => {
+      tab.querySelector('.tab-drag-div').classList[action]('draggable-tab');
+      tab.querySelector('.tab-item .tab-close-button').classList[action]('show-tab-close-button');
+    };
+    if (tabEl && type === "add") {
+      applyAction(tabEl);
+    } else {
+      tabBarEL.forEach(applyAction);
+    }
   },
   updateAll: function () {
     empty(tabBar.containerInner)
@@ -242,6 +265,11 @@ const tabBar = {
       tabBar.containerInner.removeChild(tabEl)
       delete tabBar.tabElementMap[tabId]
       tabBar.handleSizeChange()
+    }
+    if(tabs.count() <= 2 ){
+      tabBar.handleTabWindowDrag("add")
+    }else{
+      tabBar.handleTabWindowDrag("remove")
     }
   },
   handleDividerPreference: function (dividerPreference) {

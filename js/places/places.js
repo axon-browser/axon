@@ -55,8 +55,10 @@ const places = {
 
     var tab = tabs.get(tabId)
     var data = args[0]
-
-    if (tab.url.startsWith('data:') || tab.url.length > 5000) {
+    if(!tab || !data) {
+      return
+    }
+    if (tab?.url?.startsWith('data:') || tab?.url?.length > 5000) {
       /*
       very large URLs cause performance issues. In particular:
       * they can cause the database to grow abnormally large, which increases memory usage and startup time
@@ -68,8 +70,8 @@ const places = {
 
     /* if the page is an internal page, it normally shouldn't be saved,
      unless the page represents another page (such as the PDF viewer or reader view) */
-    var isNonIndexableInternalPage = urlParser.isInternalURL(tab.url) && urlParser.getSourceURL(tab.url) === tab.url
-    var isSearchPage = !!(searchEngine.getSearch(tab.url))
+    var isNonIndexableInternalPage = urlParser.isInternalURL(tab?.url) && urlParser.getSourceURL(tab?.url) === tab?.url
+    var isSearchPage = !!(searchEngine.getSearch(tab?.url))
 
     // full-text data from search results isn't useful
     if (isSearchPage) {
