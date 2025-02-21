@@ -109,11 +109,16 @@ window.addEventListener('load', function () {
   var isMouseDown = false
   var isDragging = false
   var distance = 0
-
-  document.body.addEventListener('mousedown', function () {
+  var distanceY = 0
+  var selectedTab = null
+  var newWindowCreated = false
+  document.body.addEventListener('mousedown', function (e) {
     isMouseDown = true
     isDragging = false
     distance = 0
+    distanceY = 0
+    selectedTab = e.target.closest('.tab-item');
+    newWindowCreated = false
   })
 
   document.body.addEventListener('mouseup', function () {
@@ -130,6 +135,28 @@ window.addEventListener('load', function () {
       }
     })
   }
+
+  document.body.addEventListener('mousemove', function (e) {
+    distanceY = Math.abs(e.clientY)
+    if (!newWindowCreated && isMouseDown && tabs.count() > 1 && distanceY >= 60) {
+      newWindowCreated = true
+
+      const tabId = selectedTab.getAttribute("data-tab");
+
+      let index
+      if (tasks.getSelected()) {
+        index = tasks.getIndex(tasks.getSelected().id) + 1
+      }
+      const newTask = tasks.get(tasks.add({}, index))
+      const targetTab = tabs.get(tabId)
+      newTask.tabs.add(targetTab)
+      browserUi().closeTab(tabId)
+      window.electron.ipcRenderer.send('detach-tab', { initialTask: newTask.id })
+      browserUi().switchToTask(tasks.getSelected().id)
+      tabBar().dragulaInstance.remove()
+    }
+
+  }, true)
 
   document.body.addEventListener('click', function (e) {
     if (isDragging && distance >= 10.0) {
@@ -189,3 +216,11 @@ require('searchbar/calculatorPlugin.js').initialize()
 
 // once everything's loaded, start the session
 require('sessionRestore.js').restore()
+
+function browserUi(id){
+  return require('browserUI.js')
+}
+
+function tabBar(id){
+  return require('navbar/tabBar.js')
+}

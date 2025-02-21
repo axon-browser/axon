@@ -236,7 +236,11 @@ function createWindowWithBounds (bounds, customArgs) {
 
   newWin.on('resize', function() {
     const winBounds = newWin.getBounds()
-    mainView.setBounds({x: 0, y: 0, width: winBounds.width, height: winBounds.height})
+    if(newWin.isMaximized()) {
+      mainView.setBounds({x: 0, y: 0, width: winBounds.width-16, height: winBounds.height-16});
+    }else{
+      mainView.setBounds({x: 0, y: 0, width: winBounds.width, height: winBounds.height});
+    }
   })
 
   if (bounds.maximized) {

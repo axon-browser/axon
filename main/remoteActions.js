@@ -110,3 +110,7 @@ ipc.handle('showItemInFolder', function (e, path) {
 ipc.on('newWindow', function (e, customArgs) {
   createWindow(customArgs)
 })
+
+ipc.on('detach-tab', function (e, customArgs) {
+  createWindow(customArgs)
+})
