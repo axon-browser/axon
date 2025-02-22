@@ -235,12 +235,8 @@ function createWindowWithBounds (bounds, customArgs) {
   newWin.contentView.addChildView(mainView)
 
   newWin.on('resize', function() {
-    const winBounds = newWin.getBounds()
-    if(newWin.isMaximized()) {
-      mainView.setBounds({x: 0, y: 0, width: winBounds.width-16, height: winBounds.height-16});
-    }else{
-      mainView.setBounds({x: 0, y: 0, width: winBounds.width, height: winBounds.height});
-    }
+    const winBounds = newWin.getContentBounds()
+    mainView.setBounds({x: 0, y: 0, width: winBounds.width, height: winBounds.height})
   })
 
   if (bounds.maximized) {
