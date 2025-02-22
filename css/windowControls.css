@@ -2,6 +2,16 @@ body {
   --control-space-top: 0px;
   --control-space-left: 0.3em;
   --control-space-right: 0.3em;
+  --primary-1: #1d1e24;
+  --primary-2: #24252d;
+  --primary-3: #2b2c34;
+  --primary-4: #343440;
+  --primary-5: #909090;
+  --secondary-1: #003046;
+  --secondary-2: #0b4d94;
+  --secondary-3: #7fb1ff;
+  --secondary-4: #a2c6ff;
+  --neutral: #f2f3f9;
 }
 /* window drag regions */
 
@@ -101,6 +111,10 @@ body.windows:not(.separate-titlebar) .windows-caption-buttons {
   right: 0;
   z-index: 10;
   margin-top: 4px;
+}
+
+.dark-theme .windows-caption-buttons .element > svg {
+  stroke: #fff;
 }
 
 .windows-caption-buttons .element {

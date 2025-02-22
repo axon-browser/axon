@@ -6,6 +6,11 @@
   cursor: pointer;
   transition: 0.2s transform, 0.2s opacity;
 }
+
+.dark-mode .searchbar-item {
+  color: var(--neutral);
+}
+
 .searchbar-item.placeholder {
   height: 80px;
 }

@@ -54,7 +54,8 @@ const PDFViewer = {
     webviews.update(data.tabId, PDFurl)
   },
   initialize: function () {
-    ipc.on('openPDF', PDFViewer.handlePDFOpenEvent)
+    // ipc.on('openPDF', PDFViewer.handlePDFOpenEvent)
+    ipc.on('openPDF', () => {})
   }
 }
 

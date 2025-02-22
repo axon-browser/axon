@@ -10,8 +10,8 @@ const textColorNN = require('ext/textColor/textColor.js')
 
 const defaultColors = {
   private: ['rgb(58, 44, 99)', 'white'],
-  lightMode: ['rgb(255, 255, 255)', 'black'],
-  darkMode: ['rgb(33, 37, 43)', 'white']
+  lightMode: ['#9bb494', 'black'],
+  darkMode: ['#1d1e24', 'white']
 }
 
 function getHours () {
@@ -197,8 +197,8 @@ function getLuminance (c) {
 }
 
 function setColor (bg, fg, isLowContrast) {
-  bg = "#9bb494";
-  fg = "#000000";
+  bg = window.isDarkMode ? defaultColors.darkMode[0] : defaultColors.lightMode[0]
+  fg = window.isDarkMode ? defaultColors.darkMode[1] : defaultColors.lightMode[1]
   document.body.style.setProperty('--theme-background-color', bg)
   document.body.style.setProperty('--theme-foreground-color', fg)
 

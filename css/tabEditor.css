@@ -12,6 +12,12 @@
   z-index: 1;
 }
 
+.dark-mode #tab-editor {
+  background-color: var(--primary-2);
+  color: white;
+
+}
+
 #tab-editor-input {
   font-size: 14px;
   padding: 0px 6px 0px 6px;
@@ -43,7 +49,7 @@
 }
 
 .dark-theme #tab-editor .tab-editor-button:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(211, 211, 211, 0.774);
 }
 
 #tab-editor
