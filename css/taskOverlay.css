@@ -53,7 +53,9 @@
   /* top: var(--control-space-top); */
   /* right: var(--control-space-right); */
   z-index: 4;
-  padding: 0px 4px 4px 4px;
+  background-color: var(--neutral);
+  border-radius: 8px;
+  margin-bottom: 4px;
   /* margin-top: 4px; */
 }
 
@@ -62,11 +64,41 @@
 }
 
 #switch-task-button svg {
-  width: 25px;
-  height: 25px;
+  width: 28px;
+  height: 28px;
   display: block;
   margin-top: 2px;
 }
+
+
+.dark-mode #switch-task-button {
+  border: none;
+  background-color: var(--primary-4);
+}
+
+
+#switch-task-button .navbar-action-button:hover {
+background-color: none;
+}
+
+#switch-task-button svg rect:hover {
+fill: var(--neutral);
+}
+
+
+.dark-mode #switch-task-button svg rect {
+fill: var(--primary-4);
+stroke: none !important;
+}
+
+.dark-mode #switch-task-button svg rect:hover {
+fill: var(--primary-3);
+}
+
+.dark-mode #switch-task-button svg path {
+fill: var(--neutral);
+}
+
 #task-overlay {
   display: flex;
   flex-direction: column;
@@ -75,7 +107,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #fff;
+  background-color: var(--primary-4);
   white-space: nowrap;
   overflow: auto;
   opacity: 1;
