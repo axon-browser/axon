@@ -1,4 +1,5 @@
 const currrentDownloadItems = {}
+let lastDownloadDirectory = app.getPath('downloads');
 
 ipc.on('cancelDownload', function (e, path) {
   if (currrentDownloadItems[path]) {
@@ -10,7 +11,27 @@ function isAttachment (header) {
   return /^\s*attache*?ment/i.test(header)
 }
 
+function getUniqueFilePath(filePath) {
+  const dir = path.dirname(filePath);
+  const ext = path.extname(filePath);
+  const base = path.basename(filePath, ext);
+
+  let counter = 1;
+  let uniqueFilePath = filePath;
+
+  while (fs.existsSync(uniqueFilePath)) {
+    uniqueFilePath = path.join(dir, `${base} (${counter})${ext}`);
+    counter++;
+  }
+
+  return uniqueFilePath;
+}
+
 function downloadHandler (event, item, webContents) {
+  const defaultPath = path.join(lastDownloadDirectory, item.getFilename());
+  const uniquePath = getUniqueFilePath(defaultPath);
+  item.setSaveDialogOptions({ defaultPath: uniquePath })
+
   let sourceWindow = windows.windowFromContents(webContents)?.win
   if (!sourceWindow) {
     sourceWindow = windows.getCurrent()
@@ -44,6 +65,7 @@ function downloadHandler (event, item, webContents) {
   })
 
   item.once('done', function (e, state) {
+    lastDownloadDirectory = path.dirname(item.getSavePath());
     delete currrentDownloadItems[item.getSavePath()]
     sendIPCToWindow(sourceWindow, 'download-info', {
       path: item.getSavePath(),
